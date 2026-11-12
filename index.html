@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CERVÉLO — Dirancang untuk Membolongi Angin</title>
+<meta name="description" content="Landing page Cervélo dengan efek lens distortion presisi. Periksa setiap detail sepeda melalui lensa yang mengikuti kursor." />
+<style>
+  /* ============ TOKEN ============ */
+  :root{
+    --bg:#0a0a0c;
+    --bg2:#0f0f12;
+    --panel:#141418;
+    --panel2:#1b1b21;
+    --text:#f5f5f6;
+    --muted:#9a9aa4;
+    --muted2:#6c6c75;
+    --accent:#e10600;       /* Cervélo red */
+    --accent2:#ff2d20;
+    --line:rgba(255,255,255,.08);
+    --line2:rgba(255,255,255,.14);
+    --maxw:1280px;
+    --disp:'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--disp);
+    font-size:16px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  ::selection{background:var(--accent);color:#fff}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
+  .kicker{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;
+  }
+  .accent{color:var(--accent)}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:14px 26px;border:1px solid var(--line2);
+    background:transparent;color:var(--text);
+    font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    cursor:pointer;transition:.25s ease;backdrop-filter:blur(6px);
+  }
+  .btn:hover{border-color:var(--text);transform:translateY(-2px)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.primary:hover{background:var(--accent2);border-color:var(--accent2)}
+  .btn .arrow{transition:transform .25s ease}
+  .btn:hover .arrow{transform:translateX(4px)}
+
+  /* ============ NAV ============ */
+  nav.top{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 32px;
+    background:linear-gradient(180deg,rgba(10,10,12,.85),rgba(10,10,12,0));
+    transition:background .3s ease, padding .3s ease, border-color .3s ease;
+    border-bottom:1px solid transparent;
+  }
+  nav.top.scrolled{
+    background:rgba(10,10,12,.92);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+    padding:12px 32px;
+  }
+  .brand{
+    font-weight:900;letter-spacing:.22em;font-size:20px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .brand .dot{width:8px;height:8px;background:var(--accent);border-radius:1px;display:inline-block}
+  nav .links{display:flex;gap:34px}
+  nav .links a{
+    font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;transition:color .2s;position:relative;
+  }
+  nav .links a:hover{color:var(--text)}
+  nav .links a::after{content:'';position:absolute;left:0;bottom:-6px;width:0;height:1px;background:var(--accent);transition:width .25s}
+  nav .links a:hover::after{width:100%}
+  nav .right{display:flex;align-items:center;gap:18px}
+
+  /* ============ HERO ============ */
+  #hero{
+    position:relative;min-height:100vh;width:100%;overflow:hidden;
+    display:flex;align-items:center;
+  }
+  #heroImg{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    z-index:1;will-change:transform;
+  }
+  /* constant, very gentle global "lens" vignette over the hero for cinematic character */
+  #hero::after{
+    content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:
+      radial-gradient(120% 100% at 70% 50%, rgba(10,10,12,0) 40%, rgba(10,10,12,.55) 100%),
+      linear-gradient(90deg, rgba(10,10,12,.92) 0%, rgba(10,10,12,.55) 30%, rgba(10,10,12,.05) 55%, rgba(10,10,12,.25) 100%);
+  }
+  .hero-inner{position:relative;z-index:3;max-width:640px;padding:0 32px}
+  .hero-inner .kicker{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+  .hero-inner .kicker .bar{width:34px;height:2px;background:var(--accent)}
+  .hero-inner h1{
+    font-size:clamp(40px,7vw,86px);font-weight:900;line-height:.96;
+    letter-spacing:-.02em;text-transform:uppercase;
+    margin-bottom:24px;
+  }
+  .hero-inner h1 .thin{display:block;font-weight:300;letter-spacing:.01em;color:var(--muted)}
+  .hero-inner p.lead{
+    font-size:clamp(15px,1.4vw,18px);color:var(--muted);max-width:480px;
+    margin-bottom:34px;line-height:1.7;
+  }
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+
+  .lens-hint{
+    position:absolute;left:50%;bottom:42px;transform:translateX(-50%);
+    z-index:4;display:flex;align-items:center;gap:10px;
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);
+    padding:10px 16px;border:1px solid var(--line);border-radius:40px;
+    background:rgba(10,10,12,.5);backdrop-filter:blur(8px);
+    transition:opacity .6s ease, transform .6s ease;
+  }
+  .lens-hint.fade{opacity:0;transform:translateX(-50%) translateY(10px);pointer-events:none}
+  .lens-hint .pulse{
+    width:8px;height:8px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 0 0 rgba(225,6,0,.6);animation:pulse 1.8s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(225,6,0,.55)}
+    70%{box-shadow:0 0 0 10px rgba(225,6,0,0)}
+    100%{box-shadow:0 0 0 0 rgba(225,6,0,0)}
+  }
+  .scroll-cue{
+    position:absolute;right:32px;bottom:36px;z-index:4;
+    writing-mode:vertical-rl;font-size:10px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--muted2);
+  }
+  .scroll-cue::after{content:'';display:block;width:1px;height:46px;background:linear-gradient(var(--muted2),transparent);margin:10px auto 0}
+
+  /* ============ THE LENS (canvas) ============ */
+  #lens{
+    position:fixed;top:0;left:0;z-index:50;
+    width:260px;height:260px;
+    pointer-events:none;
+    border-radius:50%;
+    opacity:0;
+    transition:opacity .35s ease;
+    will-change:transform, opacity;
+    box-shadow:
+      0 12px 44px rgba(0,0,0,.6),
+      0 0 0 1px rgba(255,255,255,.28),
+      inset 0 0 0 1px rgba(255,255,255,.12),
+      inset 0 0 34px rgba(0,0,0,.5);
+  }
+  #lens::before{
+    /* specular highlight — top-left glass crescent */
+    content:'';position:absolute;inset:0;border-radius:50%;pointer-events:none;
+    background:
+      radial-gradient(46% 32% at 32% 24%, rgba(255,255,255,.5), rgba(255,255,255,0) 62%),
+      radial-gradient(60% 60% at 70% 80%, rgba(255,255,255,.06), rgba(255,255,255,0) 70%);
+  }
+  #lens::after{
+    /* faint red ring to echo brand accent */
+    content:'';position:absolute;inset:0;border-radius:50%;pointer-events:none;
+    box-shadow:inset 0 0 0 2px rgba(225,6,0,.10);
+  }
+
+  /* ============ LENS EXPLAINER STRIP ============ */
+  .strip{
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    background:var(--bg2);
+  }
+  .strip .wrap{display:flex;align-items:center;gap:22px;padding-top:18px;padding-bottom:18px;flex-wrap:wrap}
+  .strip .icon{
+    width:42px;height:42px;flex:0 0 auto;border:1px solid var(--line2);border-radius:50%;
+    display:grid;place-items:center;background:var(--panel);
+  }
+  .strip .icon svg{width:22px;height:22px;stroke:var(--accent);fill:none;stroke-width:1.6}
+  .strip p{font-size:14px;color:var(--muted)}
+  .strip p b{color:var(--text);font-weight:700;letter-spacing:.04em}
+  .strip .tag{
+    margin-left:auto;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--muted2);border:1px solid var(--line);padding:6px 12px;border-radius:30px;
+  }
+
+  /* ============ SECTION SHELL ============ */
+  section.block{padding:120px 0}
+  .head{margin-bottom:54px;max-width:720px}
+  .head .kicker{margin-bottom:16px;display:flex;align-items:center;gap:12px}
+  .head .kicker .bar{width:28px;height:2px;background:var(--accent)}
+  .head h2{
+    font-size:clamp(30px,4.4vw,54px);font-weight:900;line-height:1.02;
+    letter-spacing:-.015em;text-transform:uppercase;
+  }
+  .head h2 .thin{font-weight:300;color:var(--muted)}
+  .head p{margin-top:18px;color:var(--muted);font-size:16px;max-width:560px}
+
+  /* ============ MODELS ============ */
+  .models-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .card{
+    position:relative;background:var(--panel);border:1px solid var(--line);
+    overflow:hidden;transition:transform .35s ease, border-color .35s ease;
+  }
+  .card:hover{transform:translateY(-6px);border-color:var(--line2)}
+  .card .media{
+    position:relative;aspect-ratio:4/3;overflow:hidden;
+  }
+  .card .media img{
+    width:100%;height:100%;object-fit:cover;
+    transition:transform .6s cubic-bezier(.2,.7,.2,1), filter .4s ease;
+    filter:saturate(.92) contrast(1.04);
+  }
+  .card:hover .media img{transform:scale(1.06);filter:saturate(1.08) contrast(1.06)}
+  .card .media .tag{
+    position:absolute;top:14px;left:14px;
+    font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+    background:rgba(10,10,12,.7);backdrop-filter:blur(6px);
+    padding:6px 10px;border:1px solid var(--line2);color:var(--text);
+  }
+  .card .media .lens-mark{
+    position:absolute;bottom:14px;right:14px;width:30px;height:30px;border-radius:50%;
+    border:1px solid rgba(255,255,255,.5);
+    background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.35), rgba(255,255,255,0) 60%);
+    opacity:0;transition:opacity .35s ease;
+  }
+  .card:hover .media .lens-mark{opacity:1}
+  .card .body{padding:26px 24px 30px}
+  .card .body h3{font-size:24px;font-weight:900;letter-spacing:-.01em;text-transform:uppercase}
+  .card .body .disc{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-top:6px}
+  .card .body p.desc{color:var(--muted);font-size:14px;margin-top:14px;min-height:66px}
+  .specs{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+  .specs span{
+    font-size:11px;letter-spacing:.08em;color:var(--muted);
+    border:1px solid var(--line);padding:6px 10px;border-radius:4px;background:var(--bg2);
+  }
+  .card .more{
+    margin-top:22px;display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;
+    color:var(--text);
+  }
+  .card .more .arrow{transition:transform .25s}
+  .card:hover .more .arrow{transform:translateX(4px)}
+  .card .more:hover{color:var(--accent)}
+
+  /* ============ PARALLAX QUOTE ============ */
+  .parallax{
+    position:relative;min-height:80vh;display:flex;align-items:center;
+    background:url('https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9ff9dcd23665.jpg') center/cover fixed no-repeat;
+  }
+  /* constant lens-vignette overlay for atmosphere */
+  .parallax::before{
+    content:'';position:absolute;inset:0;
+    background:
+      radial-gradient(90% 80% at 50% 50%, rgba(10,10,12,.10) 30%, rgba(10,10,12,.70) 100%),
+      linear-gradient(180deg, rgba(10,10,12,.55), rgba(10,10,12,.18) 40%, rgba(10,10,12,.78));
+  }
+  .parallax .inner{position:relative;z-index:2;max-width:780px;padding:0 32px;margin:0 auto;text-align:center}
+  .parallax q{
+    display:block;font-size:clamp(26px,4vw,46px);font-weight:300;line-height:1.25;
+    letter-spacing:-.005em;color:var(--text);font-style:italic;
+  }
+  .parallax q b{font-weight:900;font-style:normal;color:var(--text)}
+  .parallax .attr{
+    margin-top:26px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);
+  }
+  @media (pointer:coarse){.parallax{background-attachment:scroll}}
+
+  /* ============ STATS ============ */
+  .stats{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .stats .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+  .stat{text-align:left;padding:8px 0}
+  .stat .num{
+    font-size:clamp(40px,5vw,64px);font-weight:900;line-height:1;letter-spacing:-.02em;
+    display:flex;align-items:baseline;gap:6px;
+  }
+  .stat .num small{font-size:18px;color:var(--accent);font-weight:700;letter-spacing:.02em}
+  .stat .lbl{margin-top:12px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+
+  /* ============ CTA ============ */
+  .cta{position:relative;text-align:center;padding:130px 32px}
+  .cta .glow{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:520px;height:520px;border-radius:50%;
+    background:radial-gradient(circle, rgba(225,6,0,.18), rgba(225,6,0,0) 65%);
+    filter:blur(10px);pointer-events:none;z-index:0;
+  }
+  .cta .inner{position:relative;z-index:1;max-width:640px;margin:0 auto}
+  .cta h2{font-size:clamp(32px,5vw,58px);font-weight:900;text-transform:uppercase;line-height:1.02;letter-spacing:-.02em}
+  .cta p{color:var(--muted);margin:18px auto 30px;max-width:460px}
+  .cta form{display:flex;gap:10px;max-width:440px;margin:0 auto;flex-wrap:wrap}
+  .cta input{
+    flex:1;min-width:200px;background:var(--panel);border:1px solid var(--line2);
+    color:var(--text);padding:14px 18px;font-size:14px;font-family:inherit;
+  }
+  .cta input:focus{outline:none;border-color:var(--accent)}
+
+  /* ============ FOOTER ============ */
+  footer{border-top:1px solid var(--line);background:var(--bg)}
+  footer .wrap{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:40px;padding:64px 32px 40px}
+  footer .brand{margin-bottom:18px}
+  footer p.fnote{color:var(--muted2);font-size:12px;line-height:1.6;max-width:300px}
+  footer h4{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+  footer ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  footer ul a{color:var(--muted);font-size:14px;transition:color .2s}
+  footer ul a:hover{color:var(--text)}
+  footer .legal{
+    border-top:1px solid var(--line);padding:22px 32px;
+    display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    color:var(--muted2);font-size:11px;letter-spacing:.05em;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media(max-width:900px){
+    nav .links{display:none}
+    .models-grid{grid-template-columns:1fr 1fr}
+    .stats .wrap{grid-template-columns:1fr 1fr;gap:30px}
+    footer .wrap{grid-template-columns:1fr 1fr}
+    section.block{padding:80px 0}
+  }
+  @media(max-width:600px){
+    .wrap{padding:0 20px}
+    .hero-inner{padding:0 20px}
+    .models-grid{grid-template-columns:1fr}
+    .stats .wrap{grid-template-columns:1fr 1fr}
+    footer .wrap{grid-template-columns:1fr 1fr}
+    .scroll-cue{display:none}
+    .strip .tag{margin-left:0}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<nav class="top" id="nav">
+  <a href="#" class="brand"><span class="dot"></span>CERVÉLO</a>
+  <div class="links">
+    <a href="#models">Model</a>
+    <a href="#tech">Teknologi</a>
+    <a href="#quote">Cerita</a>
+    <a href="#cta">Daring</a>
+  </div>
+  <div class="right">
+    <a href="#cta" class="btn primary">Rakit Sepeda <span class="arrow">→</span></a>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header id="hero">
+  <img id="heroImg" crossorigin="anonymous"
+       src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2769e36676dd.jpg"
+       alt="Cervélo S5 sepeda road aero profil samping" />
+
+  <!-- Lens distortion canvas (mengikuti kursor, barrel + chromatic aberration) -->
+  <canvas id="lens" width="260" height="260" aria-hidden="true"></canvas>
+
+  <div class="hero-inner">
+    <div class="kicker"><span class="bar"></span>CERVÉLO S5 · AERO ROAD</div>
+    <h1>Dirancang untuk<br/><span class="thin">membolongi angin.</span></h1>
+    <p class="lead">
+      Setiap serat karbon, setiap lengkung tubular, diuji di terowongan angka.
+      Gerakkan kursor di atas bingkai — sebuah lensa distorsi presisi akan
+      memperbesar dan melengkungkan detail, persis seperti memeriksa sepeda
+      melalui kaca pembesar optik.
+    </p>
+    <div class="hero-cta">
+      <a href="#models" class="btn primary">Jelajahi S5 <span class="arrow">→</span></a>
+      <a href="#tech" class="btn">Lihat teknologi</a>
+    </div>
+  </div>
+
+  <div class="lens-hint" id="lensHint">
+    <span class="pulse"></span> Gerakkan kursor — periksa melalui lensa
+  </div>
+
+  <div class="scroll-cue">Scroll</div>
+</header>
+
+<!-- ================= LENS EXPLAINER STRIP ================= -->
+<div class="strip">
+  <div class="wrap">
+    <div class="icon">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+    </div>
+    <p><b>Lensa Distorsi Presisi.</b> Efek barrel-distortion + chromatic aberration real-time pada kanvas,
+       memperbesar 2× region di bawah kursor. Bukan filter biasa — ini optik digital yang melengkungkan piksel demi piksel.</p>
+    <span class="tag">Canvas · Barrel k=0.34</span>
+  </div>
+</div>
+
+<!-- ================= MODELS ================= -->
+<section class="block" id="models">
+  <div class="wrap">
+    <div class="head">
+      <div class="kicker"><span class="bar"></span>Lini Produk</div>
+      <h2>Tiga disiplin.<br/><span class="thin">Satu obsesi: kecepatan.</span></h2>
+      <p>Dari jalanan lintas-alpin yang berliku hingga gravel yang berdebu dan lintasan waktu di triathlon — setiap Cervélo dibangun dengan filosofi yang sama: aerodinamika tidak boleh menjadi beban.</p>
+    </div>
+
+    <div class="models-grid">
+      <!-- S5 -->
+      <article class="card">
+        <div class="media">
+          <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8e646510dafb.png" alt="Cervélo S5 aero road" />
+          <span class="tag">Aero Road</span>
+          <span class="lens-mark"></span>
+        </div>
+        <div class="body">
+          <h3>S5</h3>
+          <div class="disc">Aero Road Flagship</div>
+          <p class="desc">Velg profil dalam, cockpit terintegrasi penuh, dan rangka yang diukir oleh ribuan jam di terowongan angin. S5 adalah sepeda yang dipakai tim WorldTour saat stages berkecepatan tinggi.</p>
+          <div class="specs"><span>BBRight</span><span>32W aero*</span><span>Internal routing</span></div>
+          <a href="#" class="more">Lihat model <span class="arrow">→</span></a>
+        </div>
+      </article>
+
+      <!-- Áspero -->
+      <article class="card">
+        <div class="media">
+          <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/bce19f2686c6.jpg" alt="Cervélo Áspero gravel" />
+          <span class="tag">Gravel</span>
+          <span class="lens-mark"></span>
+        </div>
+        <div class="body">
+          <h3>Áspero</h3>
+          <div class="disc">Gravel Performance</div>
+          <p class="desc">Geometri yang stabil di tanah longgar namun responsif di aspal. Áspero menerima ban 700×42c atau 650b×2.1", dengan bottom-bracket yang menolak goyah saat pedal berdiri.</p>
+          <div class="specs"><span>700×42c</span><span>Threaded BB</span><span>Carbon layup</span></div>
+          <a href="#" class="more">Lihat model <span class="arrow">→</span></a>
+        </div>
+      </article>
+
+      <!-- P-Series -->
+      <article class="card">
+        <div class="media">
+          <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ffb2b2ce6692.png" alt="Cervélo P-Series time trial" />
+          <span class="tag">TT / Triathlon</span>
+          <span class="lens-mark"></span>
+        </div>
+        <div class="body">
+          <h3>P-Series</h3>
+          <div class="disc">Time Trial &amp; Tri</div>
+          <p class="desc">Cockpit aero datar, post seat belakang, dan storage terintegrasi untuk hidrasi. P-Series adalah penerus warisan P5 — dirancang agar Anda keluar dari T2 dengan keringat yang lebih sedikit.</p>
+          <div class="specs"><span>Integrated hydration</span><span>Aero cockpit</span><span>UCI legal</span></div>
+          <a href="#" class="more">Lihat model <span class="arrow">→</span></a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PARALLAX QUOTE ================= -->
+<section class="parallax" id="quote">
+  <div class="inner">
+    <q>Kecepatan bukanlah tujuan. Ia adalah <b>konsekuensi</b> dari setiap millimeter yang ditolak kompromi.</q>
+    <div class="attr">Filosofi rekayasa Cervélo · sejak 1995</div>
+  </div>
+</section>
+
+<!-- ================= STATS ================= -->
+<section class="stats" id="tech">
+  <div class="wrap">
+    <div class="stat"><div class="num" data-target="32">0<small>W</small></div><div class="lbl">Penghematan aero*</div></div>
+    <div class="stat"><div class="num" data-target="660">0<small>g</small></div><div class="lbl">Bobot rangka*</div></div>
+    <div class="stat"><div class="num" data-target="4">0<small>×</small></div><div class="lbl">Disiplin balap</div></div>
+    <div class="stat"><div class="num" data-target="1995">0</div><div class="lbl">Cervélo sejak</div></div>
+  </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="cta" id="cta">
+  <div class="glow"></div>
+  <div class="inner">
+    <div class="kicker" style="justify-content:center;display:flex;margin-bottom:18px"><span class="bar"></span>Mulai</div>
+    <h2>Temukan Cervélomu.</h2>
+    <p>Beritahu kami gaya berkendara Anda — kami akan membantu menyusun konfigurasi, ukuran, dan komponen yang tepat.</p>
+    <form onsubmit="event.preventDefault();this.querySelector('button').textContent='Terdaftar ✓';">
+      <input type="email" placeholder="alamat@email.com" required />
+      <button type="submit" class="btn primary">Daftar</button>
+    </form>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="brand"><span class="dot"></span>CERVÉLO</div>
+      <p class="fnote">Sepeda performa tinggi dirancang di Toronto. Dipakai oleh tim WorldTour dan atlet triathlon dunia. Halaman ini adalah demo landing dengan efek lens distortion.</p>
+    </div>
+    <div>
+      <h4>Produk</h4>
+      <ul><li><a href="#models">S5</a></li><li><a href="#models">Áspero</a></li><li><a href="#models">P-Series</a></li><li><a href="#models">Caledonia</a></li></ul>
+    </div>
+    <div>
+      <h4>Tim</h4>
+      <ul><li><a href="#">WorldTour</a></li><li><a href="#">Triathlon</a></li><li><a href="#">Gravel</a></li><li><a href="#">Atlet</a></li></ul>
+    </div>
+    <div>
+      <h4>Dukungan</h4>
+      <ul><li><a href="#cta">Konfigurator</a></li><li><a href="#">Dealer</a></li><li><a href="#">Garansi</a></li><li><a href="#">Kontak</a></li></ul>
+    </div>
+  </div>
+  <div class="legal">
+    <span>© 2026 Cervélo Demo Landing — efek lens distortion interaktif.</span>
+    <span>*Angka merupakan klaim produsen, bersifat representatif.</span>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   LENS DISTORTION ENGINE
+   Canvas magnifying lens following the cursor over the hero.
+   Real per-pixel barrel distortion + chromatic aberration,
+   sampling the actual hero <img> (CORS-enabled).
+   ============================================================ */
+(function(){
+  const hero   = document.getElementById('hero');
+  const heroImg= document.getElementById('heroImg');
+  const lens   = document.getElementById('lens');
+  const hint   = document.getElementById('lensHint');
+  if(!hero || !heroImg || !lens) return;
+
+  // Disable on touch / coarse pointers
+  const coarse = window.matchMedia('(pointer: coarse)').matches;
+  if(coarse){ lens.style.display='none'; if(hint) hint.style.display='none'; return; }
+
+  const ctx = lens.getContext('2d', { alpha:true });
+
+  // --- geometry ---
+  const L_CSS = 260;                          // lens diameter in CSS px
+  const DPR   = Math.min(window.devicePixelRatio || 1, 2);
+  const L     = Math.round(L_CSS * DPR);      // device px
+  lens.width  = L; lens.height = L;
+  lens.style.width = L_CSS + 'px';
+  lens.style.height= L_CSS + 'px';
+
+  const Z = 2.0;        // magnification
+  const K = 0.34;       // barrel strength (green channel)
+  const CA= 0.05;       // chromatic aberration delta (red/blue offset)
+  const cx = L/2, cy = L/2, Rmax = L/2;
+  const N  = L * L;
+
+  // --- precompute per-pixel source LUTs (barrel + per-channel CA) ---
+  const idxR = new Int32Array(N);
+  const idxG = new Int32Array(N);
+  const idxB = new Int32Array(N);
+  const inside = new Uint8Array(N);
+
+  for(let y=0; y<L; y++){
+    for(let x=0; x<L; x++){
+      const i = y*L + x;
+      const dx = x - cx, dy = y - cy;
+      const rr = Math.sqrt(dx*dx + dy*dy);
+      const r  = rr / Rmax;               // 0..1
+      if(r > 1){ inside[i] = 0; continue; }
+      inside[i] = 1;
+      // barrel: r_src = r * (1 - k*r^2)  =>  source = center + (dx,dy)*f
+      const fG = 1 - K     * r*r;
+      const fR = 1 - (K+CA)* r*r;          // red: stronger barrel (fringe)
+      const fB = 1 - (K-CA)* r*r;          // blue: weaker barrel
+      const gx = (cx + dx*fG) | 0;
+      const gy = (cy + dy*fG) | 0;
+      const rx = (cx + dx*fR) | 0;
+      const ry = (cy + dy*fR) | 0;
+      const bx = (cx + dx*fB) | 0;
+      const by = (cy + dy*fB) | 0;
+      idxR[i] = (ry*L + rx) * 4;
+      idxG[i] = (gy*L + gx) * 4;
+      idxB[i] = (by*L + bx) * 4;
+    }
+  }
+
+  // --- interaction state ---
+  let curX = 0, curY = 0;       // current lens center (viewport coords, lerped)
+  let tgtX = 0, tgtY = 0;       // target (raw cursor)
+  let active = false, raf = null, needsDraw = true;
+
+  const rect = () => heroImg.getBoundingClientRect();
+
+  // initial lens position: right-center of hero (bike-rich area)
+  const r0 = rect();
+  tgtX = r0.left + r0.width * 0.72;
+  tgtY = r0.top  + r0.height * 0.5;
+  curX = tgtX; curY = tgtY;
+
+  function draw(){
+    raf = null;
+    // smooth follow
+    curX += (tgtX - curX) * 0.3;
+    curY += (tgtY - curY) * 0.3;
+    lens.style.transform = 'translate3d(' + (curX - L_CSS/2) + 'px,' + (curY - L_CSS/2) + 'px,0)';
+
+    if(!(heroImg.complete && heroImg.naturalWidth > 0)) return;
+
+    const r = rect();
+    // lens center relative to the displayed image (CSS px)
+    const rx = curX - r.left;
+    const ry = curY - r.top;
+    // natural px per displayed CSS px
+    const scale = heroImg.naturalWidth / r.width;
+    // source window in NATURAL px: covers L/Z CSS px -> * scale
+    const sw = (L_CSS / Z) * scale;
+    const sh = (L_CSS / Z) * scale;
+    let sx = rx * scale - sw/2;
+    let sy = ry * scale - sh/2;
+    // clamp into image bounds
+    sx = Math.max(0, Math.min(heroImg.naturalWidth  - sw, sx));
+    sy = Math.max(0, Math.min(heroImg.naturalHeight - sh, sy));
+
+    ctx.clearRect(0, 0, L, L);
+    try {
+      // draw the magnified (undistorted) region first
+      ctx.drawImage(heroImg, sx, sy, sw, sh, 0, 0, L, L);
+    } catch(e) { return; }
+
+    let imgData;
+    try { imgData = ctx.getImageData(0, 0, L, L); }
+    catch(e) { /* tainted canvas fallback: leave the magnified (un-warped) view */ return; }
+
+    const src = imgData.data;
+    const out = new Uint8ClampedArray(src.length);
+    // per-pixel remap: R<-idxR, G<-idxG, B<-idxB
+    for(let i=0; i<N; i++){
+      if(!inside[i]) continue;             // outside circle -> stays transparent
+      const p = i << 2;                    // i*4
+      out[p]   = src[idxR[i]];             // R
+      out[p+1] = src[idxG[i] + 1];         // G
+      out[p+2] = src[idxB[i] + 2];         // B
+      out[p+3] = 255;
+    }
+    ctx.putImageData(new ImageData(out, L, L), 0, 0);
+  }
+
+  function loop(){
+    draw();
+    if(active) raf = requestAnimationFrame(loop);
+  }
+
+  // --- events ---
+  hero.addEventListener('mouseenter', () => {
+    active = true;
+    lens.style.opacity = '1';
+    if(hint) hint.classList.add('fade');
+    if(!raf) raf = requestAnimationFrame(loop);
+  });
+  hero.addEventListener('mouseleave', () => {
+    active = false;
+    lens.style.opacity = '0';
+    // one final draw to settle, then stop
+    if(!raf) raf = requestAnimationFrame(loop);
+  });
+  hero.addEventListener('mousemove', (e) => {
+    tgtX = e.clientX; tgtY = e.clientY;
+  });
+  // redraw on scroll (hero image moves under the cursor)
+  window.addEventListener('scroll', () => { if(active && !raf) raf = requestAnimationFrame(loop); }, { passive:true });
+
+  // keep lens crisp on resize
+  let rzT;
+  window.addEventListener('resize', () => {
+    clearTimeout(rzT);
+    rzT = setTimeout(() => { if(active && !raf) raf = requestAnimationFrame(loop); }, 120);
+  });
+
+  // draw one frame once the image loads so the lens is correct from first hover
+  if(heroImg.complete){ draw(); }
+  else { heroImg.addEventListener('load', draw, { once:true }); }
+})();
+
+
+/* ============================================================
+   NAV scroll state + stat counters
+   ============================================================ */
+(function(){
+  const nav = document.getElementById('nav');
+  const onScroll = () => {
+    if(window.scrollY > 30) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  };
+  window.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+
+  // animated counters
+  const stats = document.querySelectorAll('.stat .num');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(en => {
+      if(!en.isIntersecting) return;
+      const el = en.target;
+      io.unobserve(el);
+      const target = parseInt(el.dataset.target, 10);
+      const small = el.querySelector('small');
+      const smallHtml = small ? small.outerHTML : '';
+      const dur = 1400, t0 = performance.now();
+      const tick = (now) => {
+        const t = Math.min(1, (now - t0) / dur);
+        const e = 1 - Math.pow(1 - t, 3);          // easeOutCubic
+        const val = Math.round(target * e);
+        el.innerHTML = val + smallHtml;
+        if(t < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }, { threshold: 0.4 });
+  stats.forEach(s => io.observe(s));
+})();
+</script>
+</body>
+</html>
